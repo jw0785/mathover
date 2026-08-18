@@ -1,21 +1,40 @@
 import { workspace, TextEditorDecorationType } from "vscode";
 import { correctDecorationType, wrongDecorationType } from "./decorations-types";
 
-export default {
-	format: <string>workspace.getConfiguration().get("mathover.format"),
-	matchReg: <string>workspace.getConfiguration().get("mathover.matchRegex"),
-	matchRegFlags: <string>workspace.getConfiguration().get("mathover.matchRegexFlags"),
-	wrongReg: <string>workspace.getConfiguration().get("mathover.wrongRegex"),
-	wrongRegFlags: <string>workspace.getConfiguration().get("mathover.wrongRegexFlags"),
-	forwardSkip: <number>workspace.getConfiguration().get("mathover.forwardSkip"),
-	backwardSkip: <number>workspace.getConfiguration().get("mathover.backwardSkip"),
-	cacheSize: <number>workspace.getConfiguration().get("mathover.cacheSize"),
-	updateInterval: <number>workspace.getConfiguration().get("mathover.updateInterval"),
-	svgTextColor: <string>workspace.getConfiguration().get("mathover.svgTextColor"),
-	svgBackgroundColor: <string>workspace.getConfiguration().get("mathover.svgBackgroundColor"),
-	// if you know how to cast objects from configurations, let me know.
-	correctDecorationType: <TextEditorDecorationType>correctDecorationType,
-	wrongDecorationType: <TextEditorDecorationType>wrongDecorationType,
-	// correctDecorationType: <TextEditorDecorationType>workspace.getConfiguration().get("mathover.correctDecorationType"),
-	// wrongDecorationType: <TextEditorDecorationType>workspace.getConfiguration().get("mathover.wrongDecorationType"),
-};
+class Config {
+	format!: string;
+	matchReg!: string;
+	matchRegFlags!: string;
+	wrongReg!: string;
+	wrongRegFlags!: string;
+	forwardSkip!: number;
+	backwardSkip!: number;
+	cacheSize!: number;
+	updateInterval!: number;
+	svgTextColor!: string;
+	svgBackgroundColor!: string;
+	correctDecorationType: TextEditorDecorationType = correctDecorationType;
+	wrongDecorationType: TextEditorDecorationType = wrongDecorationType;
+
+	constructor() {
+		this.reload();
+	}
+
+	reload() {
+		const get = <T>(key: string): T => workspace.getConfiguration().get(`mathover.${key}`) as T;
+		this.format = get<string>("format");
+		this.matchReg = get<string>("matchRegex");
+		this.matchRegFlags = get<string>("matchRegexFlags");
+		this.wrongReg = get<string>("wrongRegex");
+		this.wrongRegFlags = get<string>("wrongRegexFlags");
+		this.forwardSkip = get<number>("forwardSkip");
+		this.backwardSkip = get<number>("backwardSkip");
+		this.cacheSize = get<number>("cacheSize");
+		this.updateInterval = get<number>("updateInterval");
+		this.svgTextColor = get<string>("svgTextColor");
+		this.svgBackgroundColor = get<string>("svgBackgroundColor");
+	}
+}
+
+const config = new Config();
+export default config;
