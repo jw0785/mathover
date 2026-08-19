@@ -1,5 +1,4 @@
 # Change History
 
-- v0.1.0
-
-- Initial Release.
+- v0.2.0
+<!-- TODO: add CI -->

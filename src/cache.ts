@@ -30,6 +30,6 @@ export class LRUCache {
 	}
 
 	first(): string {
-		return this.cache.keys().next().value;
+		return this.cache.keys().next().value!;
 	}
 }

@@ -4,7 +4,7 @@ import { Tex2Svg } from "./tex2svg";
 import { getMatchableSegments } from "./scope";
 
 let tex2Svg: Tex2Svg;
-let timeout: NodeJS.Timer | undefined;
+let timeout: ReturnType<typeof setTimeout> | undefined;
 
 function createTex2Svg(): Tex2Svg {
 	return new Tex2Svg(config.cacheSize);
