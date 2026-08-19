@@ -12,9 +12,13 @@ A [vscode](https://code.visualstudio.com/) extension to preview math formulas in
 
 ## How to use
 
-Define a trigger pattern as `regex` by setting `matchRegex` and `matchRegexFlags` in extension configurations.
+Select a preset from `markdown` or `legacy` 
 
-Default pattern looks for `# Math: ` and interprets whatever after it as **math** to the end of the line.
+or additionally use `custom` preset to define custom regex by setting `matchRegex` and `matchRegexFlags` in extension configurations.
+
+Default `markdown` preset looks for standard `$...$` and `$$...$$` Markdown math block.
+
+`legacy` preset looks for `# Math: ` and interprets whatever after it as **math** to the end of the line. see below for example
 
 ![Demo](images/demo.gif)
 
