@@ -18,23 +18,26 @@ async function updateDecorations() {
 
 	const segments = await getMatchableSegments(activeEditor.document);
 	const matchRegEx = new RegExp(config.matchReg, config.matchRegFlags);
-	const wrongRegEx = new RegExp(config.wrongReg, config.wrongRegFlags);
 	const wrongUsage: vscode.DecorationOptions[] = [];
 	const correctUsage: vscode.DecorationOptions[] = [];
 
 	for (const segment of segments) {
 		let match;
 		while ((match = matchRegEx.exec(segment.text))) {
-			const start = segment.offset + match.index + config.forwardSkip;
-			const end = segment.offset + match.index + match[0].length - config.backwardSkip;
-			const startPos = activeEditor.document.positionAt(start);
-			const endPos = activeEditor.document.positionAt(end);
-			const range = new vscode.Range(startPos, endPos);
-			const latex = match[0].substring(config.forwardSkip, match[0].length - config.backwardSkip);
-			const hoverUri = tex2Svg.render(latex);
-			const decoration = { range, hoverMessage: hoverUri.text };
+			const latex = match.slice(1).find(g => g !== undefined);
+			if (!latex) {
+				continue;
+			}
+			const start = segment.offset + match.index;
+			const end = segment.offset + match.index + match[0].length;
+			const range = new vscode.Range(
+				activeEditor.document.positionAt(start),
+				activeEditor.document.positionAt(end)
+			);
+			const result = tex2Svg.render(latex);
+			const decoration = { range, hoverMessage: result.text };
 
-			if (hoverUri.error || wrongRegEx.test(match[0])) {
+			if (result.error) {
 				wrongUsage.push(decoration);
 			} else {
 				correctUsage.push(decoration);

@@ -46,41 +46,29 @@
           "default": "TeX",
           "description": "Math format"
         },
-        "mathover.matchRegex": {
-          "title": "Match Regex",
-          "default": "#\\sMath:\\s(.+)",
+        "mathover.matchPreset": {
+          "title": "Match Preset",
           "type": "string",
-          "description": "Regex to match math section."
+          "enum": ["markdown", "custom", "legacy"],
+          "default": "markdown",
+          "enumDescriptions": [
+            "Match $...$ and $$...$$ delimiters (standard markdown math)",
+            "Use custom regex from matchRegex setting",
+            "Match # Math: ... comment pattern (original behavior)"
+          ],
+          "description": "Matching mode for LaTeX expressions."
+        },
+        "mathover.matchRegex": {
+          "title": "Custom Match Regex",
+          "default": "",
+          "type": "string",
+          "description": "Custom regex with capture group(s) for LaTeX content. Only used when matchPreset is 'custom'."
         },
         "mathover.matchRegexFlags": {
-          "title": "Match Regex Flags",
+          "title": "Custom Match Regex Flags",
           "default": "gm",
           "type": "string",
-          "description": "Flags for regex to match the math section."
-        },
-        "mathover.wrongRegex": {
-          "title": "Wrong Regex",
-          "default": "\\$",
-          "type": "string",
-          "description": "Regex to match wrong syntax."
-        },
-        "mathover.wrongRegexFlags": {
-          "title": "Wrong Regex Flags",
-          "default": "g",
-          "type": "string",
-          "description": "Flags for regex to match wrong syntax."
-        },
-        "mathover.forwardSkip": {
-          "title": "Forward Skip",
-          "default": 8,
-          "type": "number",
-          "description": "Number of characters to skip from the beginning of the match."
-        },
-        "mathover.backwardSkip": {
-          "title": "Backward Skip",
-          "default": 0,
-          "type": "number",
-          "description": "Number of characters to skip from the end of the match."
+          "description": "Flags for custom match regex. Only used when matchPreset is 'custom'."
         },
         "mathover.cacheSize": {
           "title": "Cache Size",

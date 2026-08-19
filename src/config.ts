@@ -1,14 +1,15 @@
 import { workspace, TextEditorDecorationType } from "vscode";
 import { correctDecorationType, wrongDecorationType } from "./decorations-types";
 
+const PRESETS: Record<string, { pattern: string; flags: string }> = {
+	markdown: { pattern: "\\$\\$(.+?)\\$\\$|\\$(?!\\$)(.+?)\\$(?!\\$)", flags: "gms" },
+	legacy: { pattern: "#\\s*Math:\\s*(.+)", flags: "gm" },
+};
+
 class Config {
 	format!: string;
 	matchReg!: string;
 	matchRegFlags!: string;
-	wrongReg!: string;
-	wrongRegFlags!: string;
-	forwardSkip!: number;
-	backwardSkip!: number;
 	cacheSize!: number;
 	updateInterval!: number;
 	svgTextColorLight!: string;
@@ -25,12 +26,14 @@ class Config {
 	reload() {
 		const get = <T>(key: string): T => workspace.getConfiguration().get(`mathover.${key}`) as T;
 		this.format = get<string>("format");
-		this.matchReg = get<string>("matchRegex");
-		this.matchRegFlags = get<string>("matchRegexFlags");
-		this.wrongReg = get<string>("wrongRegex");
-		this.wrongRegFlags = get<string>("wrongRegexFlags");
-		this.forwardSkip = get<number>("forwardSkip");
-		this.backwardSkip = get<number>("backwardSkip");
+		const preset = get<string>("matchPreset");
+		if (preset in PRESETS) {
+			this.matchReg = PRESETS[preset].pattern;
+			this.matchRegFlags = PRESETS[preset].flags;
+		} else {
+			this.matchReg = get<string>("matchRegex");
+			this.matchRegFlags = get<string>("matchRegexFlags");
+		}
 		this.cacheSize = get<number>("cacheSize");
 		this.updateInterval = get<number>("updateInterval");
 		this.svgTextColorLight = get<string>("svgTextColorLight");
