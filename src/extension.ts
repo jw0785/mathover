@@ -9,7 +9,7 @@ function createTex2Svg(): Tex2Svg {
 	return new Tex2Svg(config.cacheSize);
 }
 
-async function updateDecorations() {
+function updateDecorations() {
 	const activeEditor = vscode.window.activeTextEditor;
 	if (!activeEditor) {
 		return;
@@ -29,7 +29,7 @@ async function updateDecorations() {
 		const endPos = activeEditor.document.positionAt(end);
 		const range = new vscode.Range(startPos, endPos);
 		const latex = match[0].substring(config.forwardSkip, match[0].length - config.backwardSkip);
-		const hoverUri = await tex2Svg.render(latex);
+		const hoverUri = tex2Svg.render(latex);
 		const decoration = { range, hoverMessage: hoverUri.text };
 
 		if (hoverUri.error || wrongRegEx.test(match[0])) {
