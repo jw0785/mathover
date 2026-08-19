@@ -11,8 +11,10 @@ class Config {
 	backwardSkip!: number;
 	cacheSize!: number;
 	updateInterval!: number;
-	svgTextColor!: string;
-	svgBackgroundColor!: string;
+	svgTextColorLight!: string;
+	svgTextColorDark!: string;
+	svgBackgroundColorLight!: string;
+	svgBackgroundColorDark!: string;
 	correctDecorationType: TextEditorDecorationType = correctDecorationType;
 	wrongDecorationType: TextEditorDecorationType = wrongDecorationType;
 
@@ -31,8 +33,10 @@ class Config {
 		this.backwardSkip = get<number>("backwardSkip");
 		this.cacheSize = get<number>("cacheSize");
 		this.updateInterval = get<number>("updateInterval");
-		this.svgTextColor = get<string>("svgTextColor");
-		this.svgBackgroundColor = get<string>("svgBackgroundColor");
+		this.svgTextColorLight = get<string>("svgTextColorLight");
+		this.svgTextColorDark = get<string>("svgTextColorDark");
+		this.svgBackgroundColorLight = get<string>("svgBackgroundColorLight");
+		this.svgBackgroundColorDark = get<string>("svgBackgroundColorDark");
 	}
 }
 

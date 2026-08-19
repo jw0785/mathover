@@ -21,15 +21,31 @@ const svgOutput = new SVG({ fontCache: "local" });
 const texDoc = mathjax.document("", { InputJax: new TeX({ packages: AllPackages }), OutputJax: svgOutput });
 const mathmlDoc = mathjax.document("", { InputJax: new MathML(), OutputJax: svgOutput });
 
+const AUTO_COLORS: Record<number, string> = {
+	[vscode.ColorThemeKind.Light]: "#1e1e1e",
+	[vscode.ColorThemeKind.Dark]: "#d4d4d4",
+	[vscode.ColorThemeKind.HighContrast]: "#ffffff",
+	[vscode.ColorThemeKind.HighContrastLight]: "#000000",
+};
+
+function resolveColor(colorValue: string): string {
+	if (colorValue !== "auto") {
+		return colorValue;
+	}
+	return AUTO_COLORS[vscode.window.activeColorTheme.kind] ?? "#d4d4d4";
+}
+
 export class Tex2Svg {
 
 	private cache: LRUCache;
 	private svgTextColor: string;
 	private svgBackgroundColor: string;
 
-	constructor(cacheLimit = 1024, color = "white") {
-		this.svgTextColor = config.svgTextColor || color;
-		this.svgBackgroundColor = config.svgBackgroundColor || "auto";
+	constructor(cacheLimit = 1024) {
+		const light = vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Light
+			|| vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrastLight;
+		this.svgTextColor = resolveColor(light ? config.svgTextColorLight : config.svgTextColorDark);
+		this.svgBackgroundColor = light ? config.svgBackgroundColorLight : config.svgBackgroundColorDark;
 		this.cache = new LRUCache(cacheLimit);
 	}
 
@@ -67,8 +83,6 @@ export class Tex2Svg {
 			vscode.window.showWarningMessage(`cannot parse svg: ${svg}`);
 		}
 		const uri = `![](${dataUri})`;
-		console.log("[mathover] svg length:", svg.length, "uri length:", uri.length);
-		console.log("[mathover] svg preview:", svg.substring(0, 200));
 		this.cache.set(tex, uri);
 		return { text: uri, error: false };
 	}

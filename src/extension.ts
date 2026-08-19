@@ -77,5 +77,10 @@ export function activate(context: vscode.ExtensionContext) {
 				scheduleUpdate();
 			}
 		}),
+
+		vscode.window.onDidChangeActiveColorTheme(() => {
+			tex2Svg = createTex2Svg();
+			scheduleUpdate();
+		}),
 	);
 }

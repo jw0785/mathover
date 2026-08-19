@@ -94,17 +94,29 @@
           "type": "number",
           "description": "Number of milliseconds between decoration updates."
         },
-        "mathover.svgTextColor": {
-          "title": "SVG Text color",
-          "default": "#dddddd",
-          "type": "string",
-          "description": "Text color of hover image."
-        },
-        "mathover.svgBackgroundColor": {
-          "title": "SVG Background color",
+        "mathover.svgTextColorLight": {
+          "title": "SVG Text Color (Light Theme)",
           "default": "auto",
           "type": "string",
-          "description": "Background color of hover image."
+          "description": "Text color of hover image in light themes. Set to 'auto' to match theme."
+        },
+        "mathover.svgTextColorDark": {
+          "title": "SVG Text Color (Dark Theme)",
+          "default": "auto",
+          "type": "string",
+          "description": "Text color of hover image in dark themes. Set to 'auto' to match theme."
+        },
+        "mathover.svgBackgroundColorLight": {
+          "title": "SVG Background Color (Light Theme)",
+          "default": "auto",
+          "type": "string",
+          "description": "Background color of hover image in light themes. Set to 'auto' for transparent."
+        },
+        "mathover.svgBackgroundColorDark": {
+          "title": "SVG Background Color (Dark Theme)",
+          "default": "auto",
+          "type": "string",
+          "description": "Background color of hover image in dark themes. Set to 'auto' for transparent."
         },
         "mathover.correctDecorationType": {
           "title": "Correct Decoration Type",
