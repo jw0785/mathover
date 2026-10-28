@@ -70,6 +70,33 @@
           "type": "string",
           "description": "Flags for custom match regex. Only used when matchPreset is 'custom'."
         },
+        "mathover.enabledLanguages": {
+          "title": "Enabled Languages",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Language IDs to turn back on. Some languages are disabled by default because `$` is common there (e.g. powershell, shellscript, php) or math already renders (markdown). Enable them at your own risk. Takes priority over disabledLanguages."
+        },
+        "mathover.disabledLanguages": {
+          "title": "Disabled Languages",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional language IDs to disable Mathover in, on top of the built-in defaults."
+        },
+        "mathover.inlineDisplay": {
+          "title": "Inline Display (Experimental)",
+          "type": "boolean",
+          "default": false,
+          "tags": [
+            "experimental"
+          ],
+          "description": "Experimental: also render each formula inline after its match, without hovering. Alignment and spacing are rough."
+        },
         "mathover.cacheSize": {
           "title": "Cache Size",
           "default": 1024,
@@ -144,6 +171,20 @@
         }
       }
     }
+  },
+  "mathover": {
+    "blacklistedLanguages": [
+      "markdown",
+      "powershell",
+      "typescript",
+      "shellscript",
+      "perl",
+      "php",
+      "makefile",
+      "yaml",
+      "github-actions-workflow",
+      "dockercompose"
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

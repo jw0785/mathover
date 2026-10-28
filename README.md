@@ -20,6 +20,8 @@ Default `markdown` preset looks for standard `$...$` and `$$...$$` Markdown math
 
 `legacy` preset looks for `# Math: ` and interprets whatever after it as **math** to the end of the line. see below for example
 
+some languages are disabled by default because `$` is common there (e.g. PowerShell, shell, PHP) or math already renders (Markdown). to turn one back on at your own risk, add its language ID to `"mathover.enabledLanguages"`, e.g. `"mathover.enabledLanguages": ["powershell"]`. to disable more languages, add them to `"mathover.disabledLanguages"`. if a language is in both, it stays enabled
+
 ![Demo](images/demo.gif)
 
 ## Installing from source

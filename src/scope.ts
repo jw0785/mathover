@@ -5,7 +5,35 @@ export interface TextSegment {
 	offset: number;
 }
 
-export async function getMatchableSegments(document: vscode.TextDocument): Promise<TextSegment[]> {
+const tokenLanguages = new Set<string>();
+const noTokenLanguages = new Set<string>();
+
+// Builtin providers register at activation, only third-party extensions are checked
+export function expectsSemanticTokens(languageId: string): boolean {
+	if (tokenLanguages.has(languageId)) {
+		return true;
+	}
+	if (noTokenLanguages.has(languageId)) {
+		return false;
+	}
+	return vscode.extensions.all.some(ext => {
+		const pkg = ext.packageJSON;
+		if (ext.id.startsWith("vscode.") || (!pkg.main && !pkg.browser)) {
+			return false;
+		}
+		return pkg.activationEvents?.includes(`onLanguage:${languageId}`)
+			|| pkg.contributes?.languages?.some((lang: { id: string }) => lang.id === languageId);
+	});
+}
+
+export function giveUpSemanticTokens(languageId: string) {
+	if (!tokenLanguages.has(languageId)) {
+		noTokenLanguages.add(languageId);
+	}
+}
+
+// Returns undefined when a provider exists (or may exist) but has no tokens yet.
+export async function getMatchableSegments(document: vscode.TextDocument): Promise<TextSegment[] | undefined> {
 	const wholeDoc: TextSegment[] = [{ text: document.getText(), offset: 0 }];
 
 	try {
@@ -13,27 +41,30 @@ export async function getMatchableSegments(document: vscode.TextDocument): Promi
 			"vscode.provideDocumentSemanticTokensLegend",
 			document.uri
 		);
+		if (!legend) {
+			return undefined;
+		}
+
+		const commentType = legend.tokenTypes.indexOf("comment");
+		const stringType = legend.tokenTypes.indexOf("string");
+
+		// Provider that never marks comments (e.g. TypeScript)
+		if (commentType === -1) {
+			return wholeDoc;
+		}
+
 		const tokens = await vscode.commands.executeCommand<vscode.SemanticTokens>(
 			"vscode.provideDocumentSemanticTokens",
 			document.uri
 		);
-
-		if (!legend || !tokens || tokens.data.length === 0) {
-			return wholeDoc;
+		if (!tokens || tokens.data.length === 0) {
+			return undefined;
 		}
-
-		const filtered_tokens = new Set<number>();
-		for (let i = 0; i < legend.tokenTypes.length; i++) {
-			if (legend.tokenTypes[i] === "comment" || legend.tokenTypes[i] === "string") {
-				filtered_tokens.add(i);
-			}
-		}
-
-		if (filtered_tokens.size === 0) {
-			return wholeDoc;
-		}
+		tokenLanguages.add(document.languageId);
+		noTokenLanguages.delete(document.languageId);
 
 		const segments: TextSegment[] = [];
+		let sawComment = false;
 		let line = 0;
 		let char = 0;
 
@@ -41,9 +72,11 @@ export async function getMatchableSegments(document: vscode.TextDocument): Promi
 			line += tokens.data[i];
 			char = tokens.data[i] > 0 ? tokens.data[i + 1] : char + tokens.data[i + 1];
 
-			if (!filtered_tokens.has(tokens.data[i + 3])) {
+			const type = tokens.data[i + 3];
+			if (type !== commentType && type !== stringType) {
 				continue;
 			}
+			sawComment ||= type === commentType;
 
 			const offset = document.offsetAt(new vscode.Position(line, char));
 			const range = new vscode.Range(line, char, line, char + tokens.data[i + 2]);
@@ -56,7 +89,10 @@ export async function getMatchableSegments(document: vscode.TextDocument): Promi
 			}
 		}
 
-		return segments.length > 0 ? segments : wholeDoc;
+		// Servers often leave comments to TextMate even when the legend lists them, and may tag
+		// only parts of strings (Pylance marks just escape sequences like `\n`).
+		// Without comment tokens the scan can't be trusted.
+		return sawComment ? segments : wholeDoc;
 	} catch {
 		return wholeDoc;
 	}
